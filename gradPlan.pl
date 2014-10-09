@@ -3,6 +3,7 @@
 % by: Gage Peterson (gagekpeterson@gmail.com)
 % Info-------------------------
 % NOTE this only is going to be 100% acurate for 2012 calender year
+:- use_module(library(clpfd)).
 
 
 % how to plan: 
@@ -619,17 +620,21 @@ className(ecen490, 'Special Topics').
 requiresAll(Class, X) :- requires(Class, X).
 requiresAll(Class, X) :- requires(Class, Z), requiresAll(Z, X).
 
+
+afterRequirements((Class, _), [(Prerec, _)]) :-
+   \+requiresAll(Class, Prerec).
+
+afterRequirements((Class, Time), [(Prerec, _)| Other ]) :-
+   \+requiresAll(Class, Prerec),
+   afterRequirements((Class, Time), Other).
+
 afterRequirements((Class, Time), [(Prerec, PreTime)]) :-
-   integer(Time),
-   integer(PreTime),
    requiresAll(Class, Prerec),
-   Time > PreTime.
+   Time #> PreTime.
 
 afterRequirements((Class, Time), [(Prerec, PreTime)| Other]) :-
-   integer(Time),
-   integer(PreTime),
    requiresAll(Class, Prerec),
-   Time > PreTime,
+   Time #> PreTime,
    afterRequirements((Class, Time), Other).
 
 
